@@ -30,12 +30,26 @@ int main(void) {
 
         // Relinks the 13 nodes here so that it spells "TWELVEPLUSONE"
         // YOU CANNOT CHANGE THE "info" FIELD of ANY NODES
+        k.next = &l;
+        l.next = &a;
+        a.next = &b;
+        b.next = &d;
+        d.next = &c;
+        c.next = &g;
+        g.next = &h;
+        h.next = &i;
+        i.next = &j;
+        j.next = &m;
+        m.next = &f;
+        f.next = &e;
+        e.next = NULL;
 
         // After rearranging, print the new word
         ptr = &k;
         while ( ptr != NULL ) {
                 printf("%c", ptr->info);
                 ptr = ptr->next;
+                
         }
         printf("\n");
 
