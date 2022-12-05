@@ -69,7 +69,7 @@ int writePPM(ImagePPM *pImagePPM, char *filename)
     FILE *fp = fopen(filename, "w");
     if(fp == NULL)
     {
-        return NULL;
+        return 0;
     }
 
     fprintf(fp, "%s \n", pImagePPM->magic);
@@ -80,9 +80,9 @@ int writePPM(ImagePPM *pImagePPM, char *filename)
     {
         for(int j = 0; j < pImagePPM->numCols; j++)
         {
-            fscanf(fp, "%4d", pImagePPM->pixels[i][j].red);
-            fscanf(fp, "%4d", pImagePPM->pixels[i][j].green);
-            fscanf(fp, "%4d\t", pImagePPM->pixels[i][j].blue);
+            fprintf(fp, "%4d", pImagePPM->pixels[i][j].red);
+            fprintf(fp, "%4d", pImagePPM->pixels[i][j].green);
+            fprintf(fp, "%4d\t", pImagePPM->pixels[i][j].blue);
         }
         fprintf(fp, "\n");
     }
@@ -159,7 +159,7 @@ int writePGM(ImagePGM *pImagePGM, char *filename)
     {
         for(int j = 0; j < pImagePGM->numCols; j++)
         {
-            fscanf(fp, "%4d", pImagePGM->pixels[i][j]);
+            fprintf(fp, "%4d", pImagePGM->pixels[i][j]);
         }
         fprintf(fp, "\n");
     }
@@ -184,18 +184,19 @@ void freePGM(ImagePGM *pImagePGM)
 
 ImagePGM *convertToPGM(ImagePPM *pImagePPM)
 {
-    ImagePGM *pNew = mallocPGM(pImagePPM->numCols, pImagePPM->numRows);
+    ImagePGM *pNew = mallocPGM(pImagePPM->numRows, pImagePPM->numCols);
     strcpy(pNew->magic, "P2");
     pNew->numRows = pImagePPM->numRows;
     pNew->numCols = pImagePPM->numCols;
     pNew->maxVal = pImagePPM->maxVal;
 
     Pixel *pix;
-    for(int i = 0)
+    for(int i = 0; i < pNew->numRows; i++)
     {
-        for()
+        for(int j = 0; j < pNew->numCols; j++)
         {
-            fscanf(pNew, )
+            pix = &pImagePPM->pixels[i][j];
+            pNew->pixels[i][j] = (pix->red + pix->green + pix->blue) / 3;
         }
     }
     return pNew;
@@ -203,5 +204,20 @@ ImagePGM *convertToPGM(ImagePPM *pImagePPM)
 
 ImagePGM *shrinkPGM(ImagePGM *pImagePGM)
 {
-    return NULL;
+    int numRowBlocks = pImagePGM->numRows / 2;
+    int numColBlocks = pImagePGM->numCols / 2;
+    ImagePGM *pNew = mallocPGM(numRowBlocks, numColBlocks);
+    strcpy(pNew->magic, "P2");
+    pNew->numRows = numRowBlocks;
+    pNew->numCols = numColBlocks;
+    pNew->maxVal = pImagePGM->maxVal;
+    int **pix = pImagePGM->pixels;
+    for(int i = 0; i < numRowBlocks; i++)
+    {
+        for(int j = 0; j < numColBlocks; j++)
+        {
+            pNew->pixels[i][j] = (pix[2*i][2*j] + pix[2*i+1][2*j] + pix[2*i][2*j+1] + pix[2*i+1][2*j+1]) / 4;
+        }
+    }
+    return pNew;
 }
